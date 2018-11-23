@@ -7,11 +7,6 @@ export default class Exec extends PercyCommand {
   static hidden = false
   static strict = false
 
-  static examples = [
-    '$ percy exec -- echo \"percy is running around this echo command\"',
-    '$ percy exec -- bash -c "echo foo && echo bar"',
-  ]
-
   static flags = {
     'network-idle-timeout': flags.integer({
       char: 't',
@@ -24,6 +19,11 @@ export default class Exec extends PercyCommand {
       description: 'port',
     }),
   }
+
+  static examples = [
+    '$ percy exec -- echo \"percy is running around this echo command\"',
+    '$ percy exec -- bash -c "echo foo && echo bar"',
+  ]
 
   async run() {
     await super.run()
