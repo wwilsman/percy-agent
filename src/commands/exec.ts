@@ -36,9 +36,8 @@ export default class Exec extends PercyCommand {
     const command = argv.shift()
 
     if (!command) {
-      this.logger.info('You must supply a command to run after --')
-      this.logger.info('Example:')
-      this.logger.info('$ percy exec -- echo "run your test suite"')
+      this.warn('You must supply a command to run after --')
+
       return
     }
 
