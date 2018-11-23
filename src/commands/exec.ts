@@ -41,7 +41,7 @@ export default class Exec extends PercyCommand {
       return
     }
 
-    if (this.percyWillRun()) {
+    if (this.percyWillRun) {
       await this.agentService.start({port, networkIdleTimeout})
       this.logStart()
     }
@@ -50,7 +50,7 @@ export default class Exec extends PercyCommand {
     const spawnedProcess = spawn(command, argv, {stdio: 'inherit'})
 
     spawnedProcess.on('exit', async (code: any) => {
-      if (this.percyWillRun()) {
+      if (this.percyWillRun) {
         await this.agentService.stop()
       }
 

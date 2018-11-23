@@ -34,7 +34,7 @@ export default class Start extends PercyCommand {
     await super.run()
 
     // If Percy is disabled or is missing a token, gracefully exit here
-    if (!this.percyWillRun()) { this.exit(0) }
+    if (!this.percyWillRun) { this.exit(0) }
 
     const {flags} = this.parse(Start)
     const port = flags.port as number

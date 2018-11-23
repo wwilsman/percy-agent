@@ -11,6 +11,7 @@ export default class PercyCommand extends Command {
   processService: ProcessService
   logger: winston.LoggerInstance
   percyToken: string
+  percyWillRun: boolean = false
 
   constructor(argv: string[], config: any) {
     super(argv, config)
@@ -19,6 +20,7 @@ export default class PercyCommand extends Command {
     this.processService = new ProcessService()
     this.logger = logger
     this.percyToken = process.env.PERCY_TOKEN || ''
+    this.percyWillRun = (this.percyEnabled() && this.percyTokenPresent())
   }
 
   async run() {
@@ -29,10 +31,6 @@ export default class PercyCommand extends Command {
 
   percyEnabled(): boolean {
     return process.env.PERCY_ENABLE !== '0'
-  }
-
-  percyWillRun(): boolean {
-    return (this.percyEnabled() && this.percyTokenPresent())
   }
 
   percyTokenPresent(): boolean {

@@ -21,7 +21,7 @@ export default class Finalize extends PercyCommand {
   async run() {
     await super.run()
 
-    if (!this.percyWillRun()) { this.exit(0) }
+    if (!this.percyWillRun) { this.exit(0) }
 
     this.parse(Finalize)
 
