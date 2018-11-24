@@ -8,8 +8,7 @@ export default class Stop extends PercyCommand {
   static hidden = true
 
   static examples = [
-    '$ percy stop\n' +
-    'info: percy has stopped.',
+    '$ percy stop',
   ]
 
   static flags = {

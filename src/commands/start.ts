@@ -9,8 +9,7 @@ export default class Start extends PercyCommand {
   static hidden = true
 
   static examples = [
-    '$ percy start\n' +
-    'info: percy has started on port 5338.',
+    '$ percy start',
   ]
 
   static flags = {
