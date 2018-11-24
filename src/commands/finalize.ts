@@ -16,7 +16,7 @@ export default class Finalize extends PercyCommand {
     '[percy] Finalized parallel build.',
   ]
 
-  buildService: BuildService = new BuildService()
+  private buildService = new BuildService()
 
   async run() {
     await super.run()
