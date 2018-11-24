@@ -49,19 +49,13 @@ export default class Start extends PercyCommand {
   }
 
   private async runAttached(options: AgentOptions = {}) {
-    process.on('SIGHUP', async () => {
-      await this.agentService.stop()
-      process.exit(0)
-    })
+    const exitSignals: NodeJS.Signals[] = ['SIGHUP', 'SIGINT', 'SIGTERM']
 
-    process.on('SIGINT', async () => {
-      await this.agentService.stop()
-      process.exit(0)
-    })
-
-    process.on('SIGTERM', async () => {
-      await this.agentService.stop()
-      process.exit(0)
+    exitSignals.forEach((signal) => {
+      process.on(signal, async () => {
+        await this.agentService.stop()
+        process.exit(0)
+      })
     })
 
     await this.agentService.start(options)
