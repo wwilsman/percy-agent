@@ -70,7 +70,7 @@ export default class Start extends PercyCommand {
   }
 
   private runDetached(options: AgentOptions = {}) {
-    const pid = this.processService.runDetached(
+    const started = this.processService.runDetached(
       [
         path.resolve(`${__dirname}/../../bin/run`),
         'start',
@@ -79,7 +79,7 @@ export default class Start extends PercyCommand {
       ],
     )
 
-    if (pid) {
+    if (started) {
       this.logStart()
     } else {
       this.warn('percy is already running')
