@@ -24,8 +24,8 @@ export default class Finalize extends PercyCommand {
     if (!this.percyWillRun) { this.exit(0) }
 
     this.parse(Finalize)
-
     const result = await this.buildService.finalizeAll()
+
     if (result) {
       this.logger.info('Finalized parallel build.')
 
