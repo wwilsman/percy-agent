@@ -32,7 +32,7 @@ export default class Stop extends PercyCommand {
     if (this.processService.isRunning()) {
       await this.postToRunningAgent('/percy/stop', port)
     } else {
-      this.logger.warn('percy is already stopped.')
+      this.warn('percy is already stopped.')
     }
   }
 
@@ -40,7 +40,7 @@ export default class Stop extends PercyCommand {
     await Axios(`http://localhost:${port}${path}`, {method: 'POST'})
       .catch((error: any) => {
         if (error.message === 'socket hang up') { // We expect a hangup
-          this.logger.info('percy stopped.')
+          this.log('percy stopped.')
         } else {
           logError(error)
         }

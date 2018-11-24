@@ -82,7 +82,7 @@ export default class Start extends PercyCommand {
     if (pid) {
       this.logStart()
     } else {
-      this.logger.warn('percy is already running')
+      this.warn('percy is already running')
     }
   }
 }
