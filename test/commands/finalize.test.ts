@@ -23,7 +23,7 @@ describe('finalize', () => {
       .stderr()
       .command(['finalize', '--all'])
       .exit(0)
-      .it('exits with code 0')
+      .it('exits with code 0 when Percy is disabled')
 
     testWithNock()
       .stub(process, 'env', {PERCY_PARALLEL_NONCE: 'foo', PERCY_TOKEN: 'abc'})
