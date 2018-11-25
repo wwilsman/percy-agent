@@ -4,7 +4,7 @@ import healthCheck from '../utils/health-checker'
 import PercyCommand from './percy-command'
 
 export default class Start extends PercyCommand {
-  static description = 'Starts the percy process.'
+  static description = 'Starts a Percy build.'
   static hidden = true
 
   static examples = [
