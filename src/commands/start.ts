@@ -1,5 +1,4 @@
 import {flags} from '@oclif/command'
-import * as path from 'path'
 import {AgentOptions} from '../services/agent-options'
 import healthCheck from '../utils/health-checker'
 import PercyCommand from './percy-command'
@@ -39,16 +38,10 @@ export default class Start extends PercyCommand {
     const port = flags.port as number
     const networkIdleTimeout = flags['network-idle-timeout'] as number
 
-    if (flags.detached) {
-      this.runDetached({port, networkIdleTimeout})
-    } else {
       await this.runAttached({port, networkIdleTimeout})
     }
 
-    await healthCheck(port)
-  }
-
-  private async runAttached(options: AgentOptions = {}) {
+  private async runAttached(options: AgentOptions) {
     const exitSignals: NodeJS.Signals[] = ['SIGHUP', 'SIGINT', 'SIGTERM']
 
     exitSignals.forEach((signal) => {
@@ -60,22 +53,6 @@ export default class Start extends PercyCommand {
 
     await this.agentService.start(options)
     this.logStart()
-  }
-
-  private runDetached(options: AgentOptions = {}) {
-    const started = this.processService.runDetached(
-      [
-        path.resolve(`${__dirname}/../../bin/run`),
-        'start',
-        '-p', String(options.port),
-        '-t', String(options.networkIdleTimeout),
-      ],
-    )
-
-    if (started) {
-      this.logStart()
-    } else {
-      this.warn('percy is already running')
-    }
+    await healthCheck(options.port)
   }
 }
