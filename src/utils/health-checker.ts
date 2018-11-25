@@ -13,6 +13,8 @@ async function healthCheck(port: number) {
 
   const interceptorId = retryAxios.attach()
 
+  logger.info(`running health check on port ${port}...`)
+
   await Axios({
     method: 'get',
     url: healthcheckUrl,
@@ -20,7 +22,7 @@ async function healthCheck(port: number) {
   } as any).then(() => {
     logger.info('percy is ready.')
   }).catch((error) => {
-    logger.error(`Failed to establish a connection with ${healthcheckUrl}`)
+    logger.error(`health check failed to establish a connection with ${healthcheckUrl}`)
     logger.debug(error)
   })
 
