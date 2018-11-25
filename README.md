@@ -66,7 +66,7 @@ OPTIONS
 
 EXAMPLE
   $ percy finalize --all
-  [percy] Finalized parallel build.
+  [percy] Finalized all builds.
 ```
 
 _See code: [dist/commands/finalize.ts](https://github.com/percy/percy-agent/blob/v0.1.3/dist/commands/finalize.ts)_

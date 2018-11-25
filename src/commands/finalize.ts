@@ -12,8 +12,7 @@ export default class Finalize extends PercyCommand {
   }
 
   static examples = [
-    '$ percy finalize --all\n' +
-    '[percy] Finalized parallel build.',
+    '$ percy finalize --all',
   ]
 
   private buildService = new BuildService()
@@ -27,7 +26,7 @@ export default class Finalize extends PercyCommand {
     const result = await this.buildService.finalizeAll()
 
     if (result) {
-      this.logger.info('Finalized parallel build.')
+      this.logger.info('Finalized all builds.')
 
       const webUrl = result.body.data.attributes['web-url']
       this.logger.info('Visual diffs are now processing: ' + colors.blue(`${webUrl}`))

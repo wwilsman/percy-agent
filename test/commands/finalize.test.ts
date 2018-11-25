@@ -30,10 +30,10 @@ describe('finalize', () => {
       .stdout()
       .command(['finalize', '--all'])
       .do((output) => expect(output.stdout).to.equal(
-        '[percy] Finalized parallel build.\n' +
+        '[percy] Finalized all builds.\n' +
         '[percy] Visual diffs are now processing: http://mockurl\n',
       ))
-      .it('finalizes a parallel build')
+      .it('finalizes all builds')
   })
 })
 
