@@ -12,10 +12,6 @@ export default class Start extends PercyCommand {
   ]
 
   static flags = {
-    'detached': flags.boolean({
-      char: 'd',
-      description: 'start as a detached process',
-    }),
     'network-idle-timeout': flags.integer({
       char: 't',
       default: 50,
