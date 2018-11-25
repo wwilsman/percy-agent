@@ -1,6 +1,10 @@
 import {expect, test} from '@oclif/test'
 
 describe('finalize', () => {
+  const buildCreateResponse = require('../fixtures/build-create.json')
+  const buildUrl = buildCreateResponse.data.attributes['web-url']
+  const buildId = buildCreateResponse.data.id
+
   test
     .stub(process, 'env', {PERCY_TOKEN: 'abc'})
     .stderr()
@@ -25,25 +29,20 @@ describe('finalize', () => {
       .exit(0)
       .it('exits with code 0 when Percy is disabled')
 
-    testWithNock()
-      .stub(process, 'env', {PERCY_PARALLEL_NONCE: 'foo', PERCY_TOKEN: 'abc'})
+    test
+      .nock('https://percy.io', (api) => api
+        .post(`/api/v1/builds/${buildId}/finalize?all-shards=true`)
+        .reply(201),
+      ).nock('https://percy.io', (api) => api
+        .post('/api/v1/builds/')
+        .reply(201, buildCreateResponse),
+      ).stub(process, 'env', {PERCY_PARALLEL_NONCE: 'foo', PERCY_TOKEN: 'abc'})
       .stdout()
       .command(['finalize', '--all'])
       .do((output) => expect(output.stdout).to.equal(
         '[percy] Finalized all builds.\n' +
-        '[percy] Visual diffs are now processing: http://mockurl\n',
+        `[percy] Visual diffs are now processing: ${buildUrl}\n`,
       ))
       .it('finalizes all builds')
   })
 })
-
-function testWithNock() {
-  return test
-    .nock('https://percy.io', (api) => api
-      .post('/api/v1/builds/123/finalize?all-shards=true')
-      .reply(201),
-    ).nock('https://percy.io', (api) => api
-      .post('/api/v1/builds/')
-      .reply(201, {data: {id: 123, attributes: {'build-number': '456', 'web-url': 'http://mockurl'}}}),
-  )
-}
