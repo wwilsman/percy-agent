@@ -28,14 +28,14 @@ export default class Start extends PercyCommand {
     await super.run()
 
     // If Percy is disabled or is missing a token, gracefully exit here
-    if (!this.percyWillRun) { this.exit(0) }
+    if (!this.percyWillRun) { return }
 
     const {flags} = this.parse(Start)
     const port = flags.port as number
     const networkIdleTimeout = flags['network-idle-timeout'] as number
 
-      await this.runAttached({port, networkIdleTimeout})
-    }
+    await this.runAttached({port, networkIdleTimeout})
+  }
 
   private async runAttached(options: AgentOptions) {
     const exitSignals: NodeJS.Signals[] = ['SIGHUP', 'SIGINT', 'SIGTERM']
