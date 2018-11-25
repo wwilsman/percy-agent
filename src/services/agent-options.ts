@@ -1,4 +1,4 @@
 export interface AgentOptions {
-  port?: number,
+  port: number,
   networkIdleTimeout?: number
 }

@@ -35,7 +35,7 @@ export default class AgentService {
     this.buildService = new BuildService()
   }
 
-  async start(options: AgentOptions = {}) {
+  async start(options: AgentOptions) {
     this.server = this.app.listen(options.port)
 
     this.buildId = await this.buildService.create()
