@@ -42,7 +42,10 @@ export default class AgentService {
     this.processService.writePidFile(process.pid)
 
     this.buildId = await this.buildService.create()
-    this.snapshotService = new SnapshotService(this.buildId, {networkIdleTimeout: options.networkIdleTimeout})
+    this.snapshotService = new SnapshotService(
+      this.buildId,
+      {networkIdleTimeout: options.networkIdleTimeout},
+    )
     await this.snapshotService.assetDiscoveryService.setup()
   }
 
