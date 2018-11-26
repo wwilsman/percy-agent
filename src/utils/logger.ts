@@ -20,7 +20,11 @@ export function profile(
   }
 }
 
-export function logError(error: any) {
+export function logError(error: any, message?: string) {
+  if (message) {
+    logger.error(message)
+  }
+
   logger.error(`${error.name} ${error.message}`)
   logger.debug(error)
 }

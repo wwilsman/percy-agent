@@ -1,51 +1,57 @@
 import {expect} from 'chai'
 import {describe} from 'mocha'
 import ProcessService from '../../src/services/process-service'
-import {createPidFile, deletePidFile} from '../helpers/process'
+import {deletePidFile} from '../helpers/process'
+import {captureStdErr} from '../helpers/stdout'
 
 describe('ProcessService', () => {
   const subject = new ProcessService()
 
-  afterEach(() => {
-    deletePidFile()
-  })
+  afterEach(() => deletePidFile())
 
-  describe('#isRunning', () => {
-    it('returns false if not running', () => {
-      expect(subject.isRunning()).to.equal(false)
-    })
+  context('process is not running', () => {
+    beforeEach(() => deletePidFile())
 
-    it('returns true if running', () => {
-      createPidFile()
-      expect(subject.isRunning()).to.equal(true)
+    describe('#isRunning', () => {
+      it('returns false', () => {
+        expect(subject.isRunning()).to.equal(false)
+      })
     })
   })
 
-  describe('#getPid', () => {
-    it('returns the pid', () => {
-      createPidFile(123)
-      expect(subject.getPid()).to.equal(123)
+  context('process is running', () => {
+    const pid = 123
+
+    beforeEach(() => subject.writePidFile(pid))
+
+    describe('#isRunning', () => {
+      it('returns true', () => {
+        expect(subject.isRunning()).to.equal(true)
+      })
     })
-  })
 
-  describe('#runDetached', () => {
-    it('returns pid of detached process', () => {
-      expect(subject.runDetached(['bin/run'])).to.be.a('number')
+    describe('#getPid', () => {
+      it('returns the pid', () => {
+        expect(subject.getPid()).to.equal(pid)
+      })
     })
 
-    it('returns null is process is already running', () => {
-      createPidFile()
-      expect(subject.runDetached(['bin/run'])).to.equal(undefined)
-    })
-  })
+    describe('#kill', () => {
+      it('kills attempts to kill a running process', async () => {
+        expect(subject.isRunning()).to.equal(true)
 
-  describe('#kill', () => {
-    it('kills a running process', () => {
-      subject.runDetached(['bin/run', 'start', '--attached'])
-      expect(subject.isRunning()).to.equal(true)
+        const stdError = await captureStdErr(() => {
+          subject.kill()
+        })
 
-      subject.kill()
-      expect(subject.isRunning()).to.equal(false)
+        expect(subject.isRunning()).to.equal(false)
+
+        // Since these are tests only and process id 123 is not a running process
+        // we gracefully handle the error
+        expect(stdError).to.contain(
+          `process id ${pid} was not running and so could not be killed.`,
+        )
+      })
     })
   })
 })

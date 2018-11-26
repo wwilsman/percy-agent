@@ -1,25 +1,8 @@
-import * as childProcess from 'child_process'
 import * as fs from 'fs'
+import { logError } from '../utils/logger'
 
 export default class ProcessService {
-  static PID_PATH = './.percy.pid'
-  static LOG_PATH = './percy-process.log'
-
-  runDetached(args: string[]): number | undefined {
-    if (this.isRunning()) { return }
-
-    const logFile = fs.openSync(ProcessService.LOG_PATH, 'a+')
-
-    const spawnedProcess = childProcess.spawn(process.argv[0], args, {
-      detached: false,
-      stdio: ['ignore', logFile, logFile], // logs and errors go into the same file
-    })
-
-    this.writePidFile(spawnedProcess.pid)
-    spawnedProcess.unref()
-
-    return spawnedProcess.pid
-  }
+  static PID_PATH = '.percy.pid'
 
   isRunning(): boolean {
     return fs.existsSync(ProcessService.PID_PATH)
@@ -31,15 +14,19 @@ export default class ProcessService {
   }
 
   kill() {
-    if (this.isRunning()) {
-      const pid = this.getPid()
-      fs.unlinkSync(ProcessService.PID_PATH)
+    if (!this.isRunning()) { return }
 
+    const pid = this.getPid()
+    fs.unlinkSync(ProcessService.PID_PATH)
+
+    try {
       process.kill(pid, 'SIGHUP')
+    } catch (e) {
+      logError(e, `process id ${pid} was not running and so could not be killed.`)
     }
   }
 
-  private writePidFile(pid: number) {
+  writePidFile(pid: number) {
     fs.writeFileSync(ProcessService.PID_PATH, pid)
   }
 }

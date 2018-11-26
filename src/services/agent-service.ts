@@ -11,6 +11,7 @@ import SnapshotService from './snapshot-service'
 
 export default class AgentService {
   buildService: BuildService
+  processService: ProcessService
   snapshotService: SnapshotService | null = null
 
   private readonly app: express.Application
@@ -33,10 +34,12 @@ export default class AgentService {
     this.app.get('/percy/healthcheck', this.handleHealthCheck.bind(this))
 
     this.buildService = new BuildService()
+    this.processService = new ProcessService()
   }
 
   async start(options: AgentOptions) {
     this.server = this.app.listen(options.port)
+    this.processService.writePidFile(process.pid)
 
     this.buildId = await this.buildService.create()
     this.snapshotService = new SnapshotService(this.buildId, {networkIdleTimeout: options.networkIdleTimeout})
