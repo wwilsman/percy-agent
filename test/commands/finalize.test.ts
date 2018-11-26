@@ -2,6 +2,7 @@ import {expect, test} from '@oclif/test'
 
 describe('finalize', () => {
   const buildCreateResponse = require('../fixtures/build-create.json')
+  const buildFinalizeResponse = require('../fixtures/build-finalize.json')
   const buildUrl = buildCreateResponse.data.attributes['web-url']
   const buildId = buildCreateResponse.data.id
 
@@ -17,6 +18,7 @@ describe('finalize', () => {
     .it('requires --all flag')
 
   test
+    .stub(process, 'env', {PERCY_TOKEN: 'abc'})
     .command(['finalize'])
     .exit(2)
     .it('exits with code 2')
@@ -32,7 +34,7 @@ describe('finalize', () => {
     test
       .nock('https://percy.io', (api) => api
         .post(`/api/v1/builds/${buildId}/finalize?all-shards=true`)
-        .reply(201),
+        .reply(200, buildFinalizeResponse),
       ).nock('https://percy.io', (api) => api
         .post('/api/v1/builds/')
         .reply(201, buildCreateResponse),
