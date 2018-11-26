@@ -12,13 +12,15 @@ export default class AssetDiscoveryService extends PercyClientService {
   responseService: ResponseService
   browser: puppeteer.Browser | null
   page: puppeteer.Page | null
+  buildId: number
 
   readonly DEFAULT_NETWORK_IDLE_TIMEOUT: number = 50 // ms
   networkIdleTimeout: number // ms
 
   constructor(buildId: number, options: AssetDiscoveryOptions = {}) {
     super()
-    this.responseService = new ResponseService(buildId)
+    this.buildId = buildId
+    this.responseService = new ResponseService(this.buildId)
     this.networkIdleTimeout = options.networkIdleTimeout || this.DEFAULT_NETWORK_IDLE_TIMEOUT
     this.browser = null
     this.page = null
@@ -97,19 +99,16 @@ export default class AssetDiscoveryService extends PercyClientService {
   }
 
   async teardown() {
-    await this.closePage()
     await this.closeBrowser()
   }
 
   private async closeBrowser() {
-    if (!this.browser) { return }
-    await this.browser.close()
-    this.browser = null
-  }
+    if (this.browser) {
+      // Closes down pages open too
+      await this.browser.close()
+    }
 
-  private async closePage() {
-    if (!this.page) { return }
-    await this.page.close()
+    this.browser = null
     this.page = null
   }
 }

@@ -3,7 +3,7 @@ import AssetDiscoveryService from './asset-discovery-service'
 import PercyClientService from './percy-client-service'
 import ResourceService from './resource-service'
 
-interface SnapshotServiceOptions {
+export interface SnapshotServiceOptions {
   networkIdleTimeout?: number
 }
 
