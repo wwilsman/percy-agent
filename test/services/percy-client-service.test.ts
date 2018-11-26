@@ -15,4 +15,27 @@ describe('PercyClientService', () => {
       })
     })
   })
+
+  describe('#parseRequestPath', () => {
+    it('parses urls', () => {
+      expect(subject.parseRequestPath('https://percy.io/'))
+        .to.eq('https://percy.io/')
+
+      expect(subject.parseRequestPath('https://percy.io/logo.svg'))
+        .to.eq('https://percy.io/logo.svg')
+    })
+
+    it('maintains query params', () => {
+      expect(subject.parseRequestPath('https://percy.io/search?q=foo'))
+        .to.eq('https://percy.io/search?q=foo')
+    })
+
+    it('strips anchors', () => {
+      expect(subject.parseRequestPath('https://percy.io/search?q=foo#results'))
+        .to.eq('https://percy.io/search?q=foo')
+
+      expect(subject.parseRequestPath('https://percy.io/#anchor'))
+        .to.eq('https://percy.io/')
+    })
+  })
 })
