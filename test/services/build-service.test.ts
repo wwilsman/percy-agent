@@ -8,38 +8,45 @@ describe('BuildService', () => {
   const subject = new BuildService()
 
   const buildCreateResponse = require('../fixtures/build-create.json')
+  const buildFinalizeResponse = require('../fixtures/build-finalize.json')
+  const buildUrl = buildCreateResponse.data.attributes['web-url']
+  const buildNumber = buildCreateResponse.data.attributes['build-number']
   const buildId = buildCreateResponse.data.id
 
-  afterEach(() => nock.cleanAll())
-
-  describe('#createBuild', () => {
+  context('API responses are successful', () => {
     beforeEach(() => {
-      nock('https://percy.io')
-        .post('/api/v1/builds/')
+      nock('https://percy.io').post('/api/v1/builds/')
         .reply(201, buildCreateResponse)
+
+      nock('https://percy.io').post(`/api/v1/builds/${buildId}/finalize`)
+        .reply(200, buildFinalizeResponse)
     })
 
-    it('creates a build', async () => {
-      let createdBuildId: number | null = null
+    afterEach(() => nock.cleanAll())
 
-      await captureStdOut(async () => {
-        createdBuildId = await subject.create()
+    describe('#createBuild', () => {
+      it('creates a build', async () => {
+        let createdBuildId: number | null = null
+
+        const stdout = await captureStdOut(async () => {
+          createdBuildId = await subject.create()
+        })
+
+        expect(createdBuildId).to.equal(+buildId)
+        expect(stdout).to.eq(
+          `[percy] created build #${buildNumber}: ${buildUrl}\n`,
+        )
       })
-
-      expect(createdBuildId).to.equal(+buildId)
-    })
-  })
-
-  describe('#finalizeBuild', () => {
-    beforeEach(() => {
-      nock('https://percy.io')
-        .post(`/api/v1/builds/${buildId}/finalize`)
-        .reply(201, {data: {id: buildId}})
     })
 
-    it('finalizes a build', async () => {
-      const stdout = await captureStdOut(() => subject.finalize())
-      expect(stdout).to.match(/\[percy\] finalized build #\d+: https:\/\/percy\.io\/test\/test\/builds\/\d+/)
+    describe('#finalizeBuild', () => {
+
+      it('finalizes a build', async () => {
+        const stdout = await captureStdOut(() => subject.finalize())
+        expect(stdout).to.eq(
+          `[percy] finalized build #${buildNumber}: ${buildUrl}\n`,
+        )
+      })
     })
   })
 })
