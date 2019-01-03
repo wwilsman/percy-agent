@@ -1,4 +1,5 @@
 import * as puppeteer from 'puppeteer'
+import { SnapshotOptions } from '../percy-agent-client/snapshot-options'
 import logger, {logError, profile} from '../utils/logger'
 import waitForNetworkIdle from '../utils/wait-for-network-idle'
 import PercyClientService from './percy-client-service'
@@ -38,7 +39,11 @@ export default class AssetDiscoveryService extends PercyClientService {
     profile('-> assetDiscoveryService.browser.newPage')
   }
 
-  async discoverResources(rootResourceUrl: string, domSnapshot: string, enableJavaScript = false): Promise<any[]> {
+  async discoverResources(
+    rootResourceUrl: string,
+    domSnapshot: string,
+    snapshotOptions: SnapshotOptions,
+  ): Promise<any[]> {
     profile('-> assetDiscoveryService.discoverResources')
 
     if (!this.browser || !this.page) {
@@ -52,7 +57,7 @@ export default class AssetDiscoveryService extends PercyClientService {
 
     let resources: any[] = []
 
-    await this.page.setJavaScriptEnabled(enableJavaScript)
+    await this.page.setJavaScriptEnabled(snapshotOptions.enableJavaScript || false)
 
     this.page.on('request', async (request) => {
       if (request.url() === rootResourceUrl) {
@@ -77,6 +82,19 @@ export default class AssetDiscoveryService extends PercyClientService {
     profile('--> assetDiscoveryService.page.goto', {url: rootResourceUrl})
     await this.page.goto(rootResourceUrl)
     profile('--> assetDiscoveryService.page.goto')
+
+    profile('--> assetDiscoveryService.page.setViewport')
+    const widths = (snapshotOptions.widths || [])
+
+    for (const width of widths) {
+      await this.page.setViewport(
+        Object.assign(this.page.viewport(), {width}),
+      )
+      await waitForNetworkIdle(this.page, 500).catch(logError)
+
+      logger.info(`current viewport width: ${this.page.viewport().width}`)
+    }
+    profile('--> assetDiscoveryService.page.setViewport')
 
     profile('--> assetDiscoveryService.waitForNetworkIdle')
     await waitForNetworkIdle(this.page, this.networkIdleTimeout).catch(logError)

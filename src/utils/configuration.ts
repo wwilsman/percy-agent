@@ -5,6 +5,7 @@ import * as path from 'path'
 export interface SnapshotConfiguration {
   widths?: [number],
   'min-height'?: number,
+  enableJavaScript?: boolean,
 }
 
 export interface Configuration {

@@ -2,6 +2,7 @@ import * as bodyParser from 'body-parser'
 import * as cors from 'cors'
 import * as express from 'express'
 import {Server} from 'http'
+import { SnapshotOptions } from '../percy-agent-client/snapshot-options'
 import configuration, {SnapshotConfiguration} from '../utils/configuration'
 import logger, {profile} from '../utils/logger'
 import {AgentOptions} from './agent-options'
@@ -67,10 +68,14 @@ export default class AgentService {
 
     if (!this.snapshotService) { return response.json({success: false}) }
 
+    const snapshotOptions: SnapshotOptions = {
+      widths: request.body.widths,
+      enableJavaScript: request.body.enableJavaScript,
+    }
     const resources = await this.snapshotService.buildResources(
       request.body.url,
       request.body.domSnapshot,
-      request.body.enableJavaScript,
+      snapshotOptions,
     )
 
     const snapshotConfiguration = (configuration().snapshot || {}) as SnapshotConfiguration
